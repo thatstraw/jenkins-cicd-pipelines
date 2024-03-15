@@ -3,6 +3,7 @@ pipeline {
 
     tools {
         jdk 'jdk11'
+        nodejs 'nodejs16'
     }
     environment {
         SCANNER_HOME= tool 'sonar-scanner'
@@ -31,6 +32,25 @@ pipeline {
                      sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Bank \
                      -Dsonar.projectKey=Bank
                      '''
+                }
+            }
+        }
+        stage('Install Dependences') {
+            steps {
+                sh "nmp install"
+            }
+        }
+        stage('Backend') {
+            steps {
+                dir('/root/.jenkins/workspace/Bank/app/backend'){
+                    sh "npm install"
+                }
+            }
+        }
+        stage('Frontend') {
+            steps {
+                dir('/root/.jenkins/workspace/Bank/app/frontend'){
+                    sh "npm install"
                 }
             }
         }
