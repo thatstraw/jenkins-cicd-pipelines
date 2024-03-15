@@ -1,6 +1,13 @@
 pipeline {
     agent any
 
+    tools {
+        jdk 'jdk11'
+    }
+    environment {
+        SCANNER_HOME= tool 'sonar-scanner'
+    }
+
     stages {
         stage('Git Checkout') {
             steps {
@@ -16,6 +23,15 @@ pipeline {
         stage('Trivy FS Scan') {
             steps {
                 sh "trivy fs ."
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('sonar') {
+                     sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Bank \
+                     -Dsonar.projectKey=Bank
+                     '''
+                }
             }
         }
     }
